@@ -257,6 +257,7 @@ right_prompt_segment() {
   if [[ -n "$6" ]]; then
     visual_identifier="$(print_icon $6)"
     if [[ -n "$visual_identifier" ]]; then
+      visual_identifier="${visual_identifier} "
       # Allow users to overwrite the color for the visual identifier only.
       local visual_identifier_color_variable=POWERLEVEL9K_${(U)1#prompt_}_VISUAL_IDENTIFIER_COLOR
       set_default $visual_identifier_color_variable $4
@@ -459,6 +460,13 @@ prompt_custom() {
 
 # Dir: current working directory
 prompt_dir() {
+  # Red prompt for root, blue for default user
+  if [[ "$UID" -eq 0 ]]; then
+    color="red"
+  else
+    color="blue"
+  fi
+
   local current_path='%~'
   if [[ -n "$POWERLEVEL9K_SHORTEN_DIR_LENGTH" ]]; then
 
@@ -508,11 +516,11 @@ prompt_dir() {
 
   local current_icon=''
   if [[ $(print -P "%~") == '~' ]]; then
-    "$1_prompt_segment" "$0_HOME" "$2" "blue" "$DEFAULT_COLOR" "$current_path" 'HOME_ICON'
+    "$1_prompt_segment" "$0_HOME" "$2" "$color" "$DEFAULT_COLOR" "$current_path" 'HOME_ICON'
   elif [[ $(print -P "%~") == '~'* ]]; then
-    "$1_prompt_segment" "$0_HOME_SUBFOLDER" "$2" "blue" "$DEFAULT_COLOR" "$current_path" 'HOME_SUB_ICON'
+    "$1_prompt_segment" "$0_HOME_SUBFOLDER" "$2" "$color" "$DEFAULT_COLOR" "$current_path" 'HOME_SUB_ICON'
   else
-    "$1_prompt_segment" "$0_DEFAULT" "$2" "blue" "$DEFAULT_COLOR" "$current_path" 'FOLDER_ICON'
+    "$1_prompt_segment" "$0_DEFAULT" "$2" "$color" "$DEFAULT_COLOR" "$current_path" 'FOLDER_ICON'
   fi
 }
 
@@ -754,8 +762,6 @@ prompt_status() {
   if [[ "$POWERLEVEL9K_STATUS_VERBOSE" == true ]]; then
     if [[ "$RETVAL" -ne 0 ]]; then
       "$1_prompt_segment" "$0_ERROR" "$2" "red" "226" "$RETVAL" 'CARRIAGE_RETURN_ICON'
-    else
-      "$1_prompt_segment" "$0_OK" "$2" "$DEFAULT_COLOR" "046" "" 'OK_ICON'
     fi
   else
     if [[ "$RETVAL" -ne 0 ]]; then
@@ -1061,8 +1067,8 @@ powerlevel9k_init() {
       print -P "\t%F{red}WARNING!%f %F{blue}export LANG=\"en_US.UTF-8\"%f at the top of your \~\/.zshrc is sufficient."
   fi
 
-  defined POWERLEVEL9K_LEFT_PROMPT_ELEMENTS || POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context dir rbenv vcs)
-  defined POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS || POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status root_indicator background_jobs history time)
+  defined POWERLEVEL9K_LEFT_PROMPT_ELEMENTS || POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(status dir)
+  defined POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS || POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(vcs background_jobs time)
 
   # Display a warning if deprecated segments are in use.
   typeset -AH deprecated_segments
