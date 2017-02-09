@@ -462,9 +462,9 @@ prompt_custom() {
 prompt_dir() {
   # Red prompt for root, blue for default user
   if [[ "$UID" -eq 0 ]]; then
-    color="red"
+    color="red,bold"
   else
-    color="blue"
+    color="blue,bold"
   fi
 
   local current_path='%~'
