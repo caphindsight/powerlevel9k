@@ -761,7 +761,7 @@ set_default POWERLEVEL9K_STATUS_VERBOSE true
 prompt_status() {
   if [[ "$POWERLEVEL9K_STATUS_VERBOSE" == true ]]; then
     if [[ "$RETVAL" -ne 0 ]]; then
-      "$1_prompt_segment" "$0_ERROR" "$2" "red" "226" "$RETVAL" 'CARRIAGE_RETURN_ICON'
+      "$1_prompt_segment" "$0_ERROR" "$2" "red" "226" "=$RETVAL" '' #'CARRIAGE_RETURN_ICON'
     fi
   else
     if [[ "$RETVAL" -ne 0 ]]; then
